@@ -1,0 +1,24 @@
+version: '2'
+services:
+  redis:
+    image: redis:2.8.19
+    hostname: redis
+
+  # Celery worker
+  worker:
+    image: celery-example
+    build: .
+    command: celery -A tasks worker --loglevel=info
+    links:
+      - redis
+    depends_on:
+      - redis
+
+  scheduler:
+    image: celery-example
+    build: .
+    command: python test.py
+    links:
+      - redis
+    depends_on:
+      - redis
